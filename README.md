@@ -1,6 +1,6 @@
 # VisualQuizlet
 
-A **Chrome extension** for practicing **Chinese character writing** alongside **Quizlet** flashcards. As you flip through a deck on Quizlet, a **side panel** shows a drawing canvas where you write each character **stroke-by-stroke** with immediate feedback—aligned with how Hanzi are traditionally learned (stroke order and shape).
+A **Chrome extension** for practicing **Chinese character writing** alongside **Quizlet** flashcards. As you flip through a deck on Quizlet, a **side panel** shows a drawing canvas where you write each character **stroke-by-stroke** with immediate feedback, aligned with how Hanzi are traditionally learned (stroke order and shape).
 
 ---
 
@@ -142,6 +142,49 @@ After editing code, use **Reload** on the extension card on `chrome://extensions
 6. When the quiz finishes for that card, **flip on Quizlet** to verify, then move to the next card—the panel should follow.
 
 **Requirements:** Network access for **first-time** load of each character’s JSON from jsDelivr (unless you later bundle or self-host `hanzi-writer-data`).
+
+---
+
+## Creating Quizlet sets for the best experience
+
+VisualQuizlet decides what to show by **splitting each card into “Chinese” vs “not Chinese”** (CJK Unicode). It then asks you to **draw the Chinese** while showing the **other side** as the prompt when it can. Structure your sets so that split is obvious and stable.
+
+### Recommended card layout
+
+| Do | Why |
+|----|-----|
+| Put **Hanzi on one side only** (term *or* definition—pick one and stay consistent) | The extension maps **Chinese ↔ prompt** using CJK detection. Mixing English and Chinese in the same field makes the “prompt” noisy or ambiguous. |
+| Put **pinyin + English on the other side** | You read meaning + pronunciation while practicing writing; matches the intended study loop. |
+| Use **plain text** for the Chinese side when possible | Fewer formatting quirks in the DOM; easier for the page scraper to read the right string. |
+| Prefer **one word or short phrase per card** for writing practice | Multi-character entries still work (you draw **each character in order**), but long sentences are tiring and sync can be trickier. |
+
+### Example patterns that work well
+
+**Pattern A — Chinese → pinyin + English (common for learners)**  
+- **Term:** `你好`  
+- **Definition:** `nǐ hǎo — hello`  
+
+**Pattern B — English (+ optional pinyin) → Chinese (reverse)**  
+- **Term:** `hello (nǐ hǎo)`  
+- **Definition:** `你好`  
+
+Either works as long as **one field is clearly “only Chinese characters”** (and the other is not).
+
+### Study mode on Quizlet
+
+- Use **Flashcards** (URL often includes `/flashcards`) so the **visible card updates** as you flip—this is what the content script watches.
+- Visit the **set page** at least once if you want a reliable **card count** in the side panel; the script can scrape the full list there when Quizlet exposes it.
+
+### Characters and course content
+
+- Stick to **common simplified (or standard) characters** when you can. Hanzi Writer ships data for **thousands** of frequent characters; **very rare or obscure glyphs** may not load and can be skipped.
+- **Traditional vs simplified:** Hanzi Writer supports many characters, but coverage follows its dataset—if a traditional form fails to load, try the simplified equivalent on the Chinese side or a different card wording.
+
+### Habits that improve learning (not required by the tool)
+
+- **Keep definitions consistent** (e.g. always `pinyin — gloss`) so you parse the prompt quickly.
+- **Smaller sets** (e.g. 10–20 new characters per week) align well with **repeated stroke practice** in the side panel.
+- After drawing correctly in the panel, **flip the card on Quizlet** to reinforce recognition and self-check.
 
 ---
 
