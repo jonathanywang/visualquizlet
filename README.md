@@ -1,6 +1,6 @@
 # VisualQuizlet
 
-A **Chrome extension** for practicing **Chinese character writing** alongside **Quizlet** flashcards. As you flip through a deck on Quizlet, a **side panel** shows a drawing canvas where you write each character **stroke-by-stroke** with immediate feedback—aligned with how Hanzi are traditionally learned (stroke order and shape), not generic “computer vision” from a photo of your sketch.
+A **Chrome extension** for practicing **Chinese character writing** alongside **Quizlet** flashcards. As you flip through a deck on Quizlet, a **side panel** shows a drawing canvas where you write each character **stroke-by-stroke** with immediate feedback—aligned with how Hanzi are traditionally learned (stroke order and shape).
 
 ---
 
