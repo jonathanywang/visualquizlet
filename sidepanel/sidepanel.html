@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VisualQuizlet</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <h1>VisualQuizlet</h1>
+    </div>
+    <div class="header-right">
+      <span id="connection-dot" class="dot disconnected"></span>
+      <span id="connection-label">Not connected</span>
+    </div>
+  </header>
+
+  <!-- Waiting state: no Quizlet page detected -->
+  <section id="state-waiting" class="state active">
+    <div class="waiting-content">
+      <div class="waiting-icon">笔</div>
+      <h2>Ready to Practice</h2>
+      <p>Navigate to a Quizlet flashcard set and start flipping through cards. The drawing canvas will appear automatically.</p>
+      <button id="btn-retry" class="btn btn-secondary">Check for Quizlet Page</button>
+    </div>
+  </section>
+
+  <!-- Drawing state: actively practicing -->
+  <section id="state-drawing" class="state">
+    <div class="progress-bar-container">
+      <div id="progress-bar" class="progress-bar"></div>
+    </div>
+    <div class="stats-row">
+      <span id="card-position">-</span>
+      <span id="streak-display">Streak: 0</span>
+    </div>
+
+    <div id="prompt-area" class="prompt-area">
+      <div id="prompt-definition" class="prompt-definition"></div>
+    </div>
+
+    <div id="char-slots" class="char-slots"></div>
+
+    <div class="canvas-wrapper">
+      <div id="drawing-target" class="drawing-target">
+        <div class="rice-grid">
+          <div class="rice-line rice-h"></div>
+          <div class="rice-line rice-v"></div>
+          <div class="rice-line rice-d1"></div>
+          <div class="rice-line rice-d2"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="feedback-area" class="feedback-area">
+      <span id="stroke-info"></span>
+      <span id="mistake-info"></span>
+    </div>
+
+    <div class="controls">
+      <button id="btn-hint" class="btn btn-secondary btn-sm" title="Show stroke animation">Show Strokes</button>
+      <button id="btn-reset" class="btn btn-secondary btn-sm" title="Reset current character">Reset</button>
+      <button id="btn-skip" class="btn btn-secondary btn-sm" title="Skip this card">Skip</button>
+      <label class="toggle-label">
+        <input type="checkbox" id="toggle-outline" checked>
+        <span>Show outline</span>
+      </label>
+    </div>
+  </section>
+
+  <!-- Complete state: character drawn correctly -->
+  <section id="state-complete" class="state">
+    <div class="complete-content">
+      <div class="complete-icon">&#10003;</div>
+      <h2 id="complete-char"></h2>
+      <p id="complete-message">Correct! Flip the card on Quizlet to confirm.</p>
+      <div id="complete-stats" class="complete-stats"></div>
+    </div>
+  </section>
+
+  <!-- No Chinese state -->
+  <section id="state-no-chinese" class="state">
+    <div class="waiting-content">
+      <div class="waiting-icon">?</div>
+      <h2>No Chinese Character</h2>
+      <p id="no-chinese-text">This card doesn't have a Chinese character to practice. Flip or advance to the next card.</p>
+    </div>
+  </section>
+
+  <script src="../lib/hanzi-writer.min.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>
