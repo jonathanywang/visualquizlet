@@ -54,10 +54,8 @@
     startTime: Date.now(),
   };
 
-  // --- Connect to background service worker ---
-  const port = chrome.runtime.connect({ name: "sidepanel" });
-
-  port.onMessage.addListener((message) => {
+  function dispatchRelayMessage(message) {
+    if (!message || !message.type) return;
     if (message.type === "CARD_CHANGED") {
       handleCardChanged(message);
     } else if (message.type === "SET_LOADED") {
@@ -67,11 +65,52 @@
       }
       setConnected(true);
     }
+  }
+
+  // Live updates from the service worker (survives MV3 worker restarts).
+  chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
+    dispatchRelayMessage(message);
+    return false;
   });
 
-  port.onDisconnect.addListener(() => {
-    setConnected(false);
+  /** Instant UI when opening mid-session: last CARD_CHANGED / SET_LOADED was saved in session storage. */
+  function hydrateFromCache() {
+    try {
+      if (!chrome.storage || !chrome.storage.session) return;
+      chrome.storage.session.get(["vqLastRelay"], (data) => {
+        if (data && data.vqLastRelay) {
+          dispatchRelayMessage(data.vqLastRelay);
+        }
+      });
+    } catch (e) {
+      // storage.session unavailable
+    }
+  }
+
+  hydrateFromCache();
+
+  // Staggered REQUEST_CURRENT_CARD in the worker + resolve Quizlet tab even if focus is odd.
+  chrome.runtime.sendMessage({ type: "PANEL_OPENED" }, () => {
+    void chrome.runtime.lastError;
   });
+
+  let visibilityResyncTimer = null;
+  function scheduleVisibilityResync() {
+    if (visibilityResyncTimer) clearTimeout(visibilityResyncTimer);
+    visibilityResyncTimer = setTimeout(() => {
+      visibilityResyncTimer = null;
+      hydrateFromCache();
+      chrome.runtime.sendMessage({ type: "PANEL_VISIBLE" }, () => {
+        void chrome.runtime.lastError;
+      });
+    }, 100);
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) scheduleVisibilityResync();
+  });
+
+  window.addEventListener("focus", scheduleVisibilityResync);
 
   // --- Load session from storage ---
   chrome.storage.local.get(["vqSession"], (data) => {
@@ -483,6 +522,4 @@
     quizNextChar();
   });
 
-  // --- Request initial state ---
-  chrome.runtime.sendMessage({ type: "REQUEST_CURRENT_CARD" });
 })();

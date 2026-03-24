@@ -365,19 +365,21 @@
 
   // --- Message listener for requests from background/side panel ---
 
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.type === "REQUEST_CURRENT_CARD") {
       lastSentText = "";
       detectAndSend();
       sendResponse({ ok: true });
+      return false;
     }
     if (message.type === "REQUEST_ALL_TERMS") {
       const terms = scrapeAllTerms();
       const embedded = scrapeFromEmbeddedJSON();
       const all = terms.length > 0 ? terms : embedded;
       sendResponse({ terms: all, totalCards: all.length });
+      return false;
     }
-    return true;
+    return false;
   });
 
   // --- Initialize ---
